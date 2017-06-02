@@ -15,7 +15,7 @@ public class GenericPerson {
      */
     public static void main(String[] args) {
         SortedGroup<Integer> sortedGroup = new SortedGroup<>();
-
+        
         sortedGroup.add(32);
         sortedGroup.add(2);
         sortedGroup.add(8);
@@ -27,12 +27,13 @@ public class GenericPerson {
         sortedGroup.add(21);
         sortedGroup.add(8);
         sortedGroup.add(1);
-
+        
         System.out.println(sortedGroup);
-        int removeItem = 11;
+        int removeItem = 8;
         System.out.println("sortedGroup.remove(" + removeItem + ") = " + sortedGroup.remove(removeItem));
         for (Iterator<Integer> iter = sortedGroup.iterator(); iter.hasNext();) {
             System.out.print(iter.next() + (iter.hasNext() ? ", " : "\n"));
         }
+        System.out.println("GenericUtil.reduce(sortedGroup, 21) = " + GenericUtil.reduce(sortedGroup, 21));
     }
 }

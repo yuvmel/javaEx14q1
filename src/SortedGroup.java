@@ -1,11 +1,10 @@
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Maman 14 course 20554 question 2 by Yuval Melamed, ID 035870864
  */
 /**
  *
@@ -14,30 +13,29 @@ import java.util.Iterator;
  */
 public class SortedGroup<T extends Comparable<T>> {
 
-    private ArrayList<T> collection;
+    private final ArrayList<T> collection;
 
     public SortedGroup() {
         this.collection = new ArrayList<>();
     }
 
-    private enum IndexType {
+    public SortedGroup(List<T> existingCollection) {
+        this.collection = new ArrayList<>(existingCollection);
+    }
+
+    public enum IndexType {
         FIRST,
         POST,
         ANY;
     }
 
-    private int sortedIndex(IndexType indexType, T item) {
+    public int sortedIndex(IndexType indexType, T item) {
         int base = 0;
         int top = collection.size() - 1;
         int mid = collection.size() / 2;
         boolean found = false;
         while (top >= base) {
-            int comp = collection.get(mid).compareTo(item);
-            if (comp < 0) {
-                base = mid + 1;
-            } else if (comp > 0) {
-                top = mid - 1;
-            } else {
+            if (collection.get(mid).equals(item)) {
                 found = true;
                 switch (indexType) {
                     case FIRST:
@@ -49,6 +47,10 @@ public class SortedGroup<T extends Comparable<T>> {
                     case ANY:
                         return mid;
                 }
+            } else if (collection.get(mid).compareTo(item) < 0) {
+                base = mid + 1;
+            } else {
+                top = mid - 1;
             }
             mid = (base + top + 1) / 2;
         }
@@ -67,6 +69,10 @@ public class SortedGroup<T extends Comparable<T>> {
         int post = sortedIndex(IndexType.POST, item);
         collection.subList(first, post).clear();
         return post - first;
+    }
+
+    public SortedGroup<T> subGroup(int first, int post) {
+        return new SortedGroup<>(collection.subList(first, post));
     }
 
     public Iterator<T> iterator() {
