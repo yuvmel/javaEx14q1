@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * Sorted group of items with possible duplicates (as instructed)
  *
- * @author yuval.melamed
  * @param <T> Type of items in the sorted group collection
+ * @author yuval.melamed
  */
 public class SortedGroup<T extends Comparable<T>> {
 
@@ -25,60 +25,68 @@ public class SortedGroup<T extends Comparable<T>> {
         this.collection = new ArrayList<>(existingCollection);
     }
 
-    // These values are to be used in the binary search function below
-    public enum IndexType {
-        FIRST,
-        POST,
-        ANY;
-    }
-
-    // TODO: binary search desc !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // Binary search for index of an item - type ANY means return location even if not there (otherwise -1)
     public int sortedIndex(IndexType indexType, T item) {
         int base = 0;
         int top = collection.size() - 1;
         int mid = collection.size() / 2;
         boolean found = false;
         while (top >= base) {
+            // We use "equals" only because it was instructed. Otherwise "compareTo" below would be enough
             if (collection.get(mid).equals(item)) {
                 found = true;
                 switch (indexType) {
                     case FIRST:
-                        top = mid - 1;
+                        top = mid - 1;      // search bottom half
                         break;
                     case POST:
-                        base = mid + 1;
+                        base = mid + 1;     // search upper half
                         break;
                     case ANY:
-                        return mid;
+                        return mid;         // found
                 }
             } else if (collection.get(mid).compareTo(item) < 0) {
                 base = mid + 1;
             } else {
                 top = mid - 1;
             }
-            mid = (base + top + 1) / 2;
+            mid = (base + top + 1) / 2;     // index in the middle
         }
+
+        // Return -1 if not found, unless requested index of type ANY (a "would be" location)
         return found || indexType == IndexType.ANY ? mid : -1;
     }
 
+    // Add an item in a sorted location, allow duplicates, as instructed
     public void add(T item) {
         collection.add(sortedIndex(IndexType.ANY, item), item);
     }
 
+    // Remove all items that are equal to a given item & return the count
     public int remove(T item) {
         int first = sortedIndex(IndexType.FIRST, item);
+
+        // If nothing was found, just return 0
         if (first < 0) {
             return 0;
         }
+
+        // Find the first index which is not equal to item (optionally after last)
         int post = sortedIndex(IndexType.POST, item);
+
+        // Remove the entire range of similar items that were found
         collection.subList(first, post).clear();
+
+        // Return the count of removed items
         return post - first;
     }
 
+    // Return a new group from a given range
     public SortedGroup<T> subGroup(int first, int post) {
         return new SortedGroup<>(collection.subList(first, post));
     }
 
+    // Return an iterator to the group
     public Iterator<T> iterator() {
         return collection.iterator();
     }
@@ -86,5 +94,12 @@ public class SortedGroup<T extends Comparable<T>> {
     @Override
     public String toString() {
         return collection.toString();
+    }
+
+    // These values are to be used in the binary search function
+    public enum IndexType {
+        FIRST,
+        POST,
+        ANY;
     }
 }
