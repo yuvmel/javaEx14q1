@@ -1,7 +1,9 @@
+
+import java.util.Iterator;
+
 /*
  * Maman 14 course 20554 question 2 by Yuval Melamed, ID 035870864
  */
-
 /**
  *
  * @author yuval.melamed
@@ -12,7 +14,7 @@ public class GenericPerson {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        SortedGroup<Integer> sortedGroup = new SortedGroup<Integer>();
+        SortedGroup<Integer> sortedGroup = new SortedGroup<>();
 
         sortedGroup.add(32);
         sortedGroup.add(2);
@@ -23,13 +25,14 @@ public class GenericPerson {
         sortedGroup.add(81);
         sortedGroup.add(19);
         sortedGroup.add(21);
+        sortedGroup.add(8);
         sortedGroup.add(1);
 
         System.out.println(sortedGroup);
+        int removeItem = 11;
+        System.out.println("sortedGroup.remove(" + removeItem + ") = " + sortedGroup.remove(removeItem));
+        for (Iterator<Integer> iter = sortedGroup.iterator(); iter.hasNext();) {
+            System.out.print(iter.next() + (iter.hasNext() ? ", " : "\n"));
+        }
     }
-
-    public static <T extends Comparable<T>> void f(T x) {
-        System.out.println("x=" + x);
-    }
-
 }

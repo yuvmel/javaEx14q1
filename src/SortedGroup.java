@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,31 +20,57 @@ public class SortedGroup<T extends Comparable<T>> {
         this.collection = new ArrayList<>();
     }
 
-    private int locationFor(T item) {
+    private enum IndexType {
+        FIRST,
+        POST,
+        ANY;
+    }
+
+    private int sortedIndex(IndexType indexType, T item) {
         int base = 0;
         int top = collection.size() - 1;
         int mid = collection.size() / 2;
+        boolean found = false;
         while (top >= base) {
             int comp = collection.get(mid).compareTo(item);
-            if (comp == 0) {
-                break;
-            }
-            if (comp > 0) {
+            if (comp < 0) {
+                base = mid + 1;
+            } else if (comp > 0) {
                 top = mid - 1;
             } else {
-                base = mid + 1;
+                found = true;
+                switch (indexType) {
+                    case FIRST:
+                        top = mid - 1;
+                        break;
+                    case POST:
+                        base = mid + 1;
+                        break;
+                    case ANY:
+                        return mid;
+                }
             }
             mid = (base + top + 1) / 2;
         }
-        return mid;
+        return found || indexType == IndexType.ANY ? mid : -1;
     }
 
     public void add(T item) {
-        collection.add(locationFor(item), item);
+        collection.add(sortedIndex(IndexType.ANY, item), item);
     }
 
     public int remove(T item) {
-        return 0;
+        int first = sortedIndex(IndexType.FIRST, item);
+        if (first < 0) {
+            return 0;
+        }
+        int post = sortedIndex(IndexType.POST, item);
+        collection.subList(first, post).clear();
+        return post - first;
+    }
+
+    public Iterator<T> iterator() {
+        return collection.iterator();
     }
 
     @Override
